@@ -1,13 +1,11 @@
 from pyrogram import Client, filters
 import asyncio
-import logging
+from loguru import logger
 import tracemalloc
 import tracemalloc
 from Commands import all_commands
 
 tracemalloc.start()
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 app = Client("my_account")
 
 
@@ -20,7 +18,7 @@ async def typing(_, message):
 async def typing(_, message):
 	await all.commands.gpt(_, message)
 	
-	
+			
 def main():
 	logger.info("UserBot started")
 	app.run()
