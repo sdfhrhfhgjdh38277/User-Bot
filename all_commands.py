@@ -2,14 +2,11 @@ from g4f.models import gpt_4
 from g4f import ChatCompletion
 import tracemalloc
 from time import sleep 
-import logging
+from loguru import logger 
 import asyncio
 from threading import Thread 
 from pyrogram.errors  import FloodWait
-from pyrogram.types import Message, ChatPermissions
 from time import time
-from datetime import datetime, timedelta
-
 
 async def type_command(_, msg):
     orig_text = msg.text.split(".type ", maxsplit=1)[1]
@@ -18,23 +15,24 @@ async def type_command(_, msg):
     typing_symbol = "ㅤ"
     while text_to_be_printed != orig_text:
         try:
-            await msg.edit(text_to_be_printed + typing_symbol)
+            msg.edit(text_to_be_printed + typing_symbol)
             sleep(0.05)
             
             text_to_be_printed = text_to_be_printed + text[0]
             text = text[1:]
             
-            await msg.edit(text_to_be_printed)
+            msg.edit(text_to_be_printed)
             sleep(0.05)
             
         except FloodWait as e:  
             sleep(e.x)     
-                                
+
+                                    
 
 async def gpt(client, message):
     question =  message.text
     message_to_send = message.text.replace('.ask_gpt', ' ')
-    print("Обработка успешна. Ответ генерируется")
+    logger.info("Обработка успешна. Ответ генерируется")
     start_timer = time()
     answer = await ChatCompletion.create_async(model=gpt_4,    
     messages=[{"role": "user", "content": question}])
@@ -49,7 +47,7 @@ async def gpt(client, message):
         await message.reply_text(f"Gpt-answer: {answer}")
         
     all_need_time = round(end_timer - start_timer, 2)
-    print(f"Request generated in  {all_need_time}sec")    
+    logger.info(f"Request generated in  {all_need_time}sec")    
     
 
 
@@ -69,4 +67,5 @@ async def dice(client, message):
 		await message.reply_text("Поздравляю с победой!🎉")
 	else:
 		await message.reply_text("Введите число от 1 до 6.")
+		
 		
